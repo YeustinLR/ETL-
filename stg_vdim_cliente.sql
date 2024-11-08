@@ -47,69 +47,69 @@ SELECT * FROM vdim_cliente;
 
 -----------------------Transformacion
 -----------------------
-
 ALTER VIEW vdim_cliente AS
 SELECT 
-	[Cliente_ID]
-		,[Nombre_Cliente]
-		,NULL AS[Telefono]
-		,NULL AS[Direccion]
-		,NULL AS[Ciudad]
-		,[Region]
-		,[Codigo_Postal]
-		,[Pais]
-		,NULL AS [Contacto]
+    [Cliente_ID],
+    [Nombre_Cliente],
+    [Telefono],  -- No alteramos la columna Telefono
+    [Direccion], -- No alteramos la columna Direccion
+    [Ciudad],    -- No alteramos la columna Ciudad
+    [Region],
+    [Codigo_Postal],
+    [Pais],
+    [Contacto]   -- No alteramos la columna Contacto
 FROM (
-    --(pais de la tabla cliente) Normalizar país
+    -- Datos de la tabla CLIENTE_Jardineria con normalización
     SELECT 
         CAST(CODIGO_CLIENTE AS VARCHAR(10)) AS [Cliente_ID],
         NOMBRE_CLIENTE,
+        TELEFONO,  -- No alteramos Telefono
+        CIUDAD AS Ciudad,  -- No alteramos Ciudad
+        CASE
+            WHEN Region IS NULL THEN 'Sin informacion'
+            ELSE Region
+        END AS Region,
+        CASE
+            WHEN LEN(CODIGO_POSTAL) < 5 THEN RIGHT('00000' + CODIGO_POSTAL, 5)
+            ELSE CODIGO_POSTAL
+        END AS Codigo_Postal,
         UPPER(CASE 
-            WHEN pais = 'UK' THEN 'United Kingdom'
-            WHEN pais = 'USA' THEN 'United States'
-            ELSE pais
-		END) AS pais,
-			--Normalizar codigo postal
-			CASE
-			WHEN LEN(codigo_postal) < 5 THEN RIGHT('00000' + codigo_postal, 5)
-			ELSE codigo_postal
-		END AS codigo_postal,
-			CASE
-			WHEN Region is null THEN 'Sin informacion'
-			ELSE Region
-		END AS Region,
-		-- Normalización de la calles
+            WHEN PAIS = 'UK' THEN 'United Kingdom'
+            WHEN PAIS = 'USA' THEN 'United States'
+            ELSE PAIS
+        END) AS Pais,		-- Normalización de la calles
     REPLACE(
         REPLACE(
             REPLACE(
                 REPLACE(LINEA_DIRECCION1, 'C/', 'Calle '),
                 'Av.', 'Avenida '),
             'Rda.', 'Ronda '),
-        'Plza.', 'Plaza ') AS Direccion
+        'Plza.', 'Plaza ') AS Direccion,
+        NOMBRE_CONTACTO AS Contacto -- No alteramos Contacto
     FROM CLIENTE_Jardineria
 
+    UNION ALL -- Usamos UNION ALL para mantener todos los registros sin eliminar duplicados
 
-    UNION
-
-    --(country de la tabla Customers) Normalizar país
+    -- Datos de la tabla Customers con normalización de ciertos campos
     SELECT 
-        CUSTOMERID,
-        CompanyName AS nombre_cliente,
+        CUSTOMERID AS Cliente_ID,
+        CompanyName AS Nombre_Cliente,
+        Phone AS Telefono,  -- No alteramos Telefono
+        City AS Ciudad, -- No alteramos Ciudad
+        CASE
+            WHEN Region IS NULL THEN 'Sin informacion'
+            ELSE Region
+        END AS Region,
+        CASE
+            WHEN LEN(PostalCode) < 5 THEN RIGHT('00000' + PostalCode, 5)
+            WHEN PostalCode IS NULL THEN 'Sin informacion'
+            ELSE PostalCode
+        END AS Codigo_Postal,
         UPPER(CASE 
-            WHEN country = 'UK' THEN 'United Kingdom'
-            WHEN country = 'USA' THEN 'United States'
-            ELSE country
-        END) AS pais,
-			CASE
-			WHEN Region is null THEN 'Sin informacion'
-			ELSE Region
-		END AS Region,
-		--Normalizar codigo postal
-			CASE
-			WHEN LEN(PostalCode) < 5 THEN RIGHT('00000' + PostalCode, 5)
-			WHEN PostalCode is null THEN 'Sin informacion'
-			ELSE PostalCode
-		END AS codigo_postal,
+            WHEN Country = 'UK' THEN 'United Kingdom'
+            WHEN Country = 'USA' THEN 'United States'
+            ELSE Country
+        END) AS Pais,
 		-- Normalización de la calle
     REPLACE(
         REPLACE(
@@ -119,7 +119,7 @@ FROM (
 					'Av.', 'Avenida '),
 				'Rda.', 'Ronda '),
 			'Plza.', 'Plaza '),
-		'Avda.', 'Avenida ') AS Direccion
-
-    FROM CUSTOMERS
-) AS union_cliente
+		'Avda.', 'Avenida ') AS Direccion,
+        ContactName AS Contacto -- No alteramos Contacto
+    FROM Customers
+) AS union_cliente;
