@@ -1,11 +1,8 @@
---CREAR VISTA vdim_producto en BD STAGING
-
-CREATE VIEW vdim_producto AS
+CREATE or alter VIEW vdim_producto AS
 SELECT 
     product_id,
     nombre_producto,
     categoria,
-    proveedor_key,
     cantidad_por_unidad,
     precio_unitario,
     unidades_en_stock,
@@ -15,7 +12,6 @@ FROM (
         CAST(p.CODIGO_PRODUCTO AS VARCHAR(10)) AS product_id,
         p.NOMBRE AS nombre_producto,
         p.GAMA AS categoria,
-        CAST(p.PROVEEDOR AS VARCHAR(100)) AS proveedor_key,  
         'Unico' AS cantidad_por_unidad,  
         p.CANTIDAD_EN_STOCK AS unidades_en_stock,
         p.PRECIO_VENTA AS precio_unitario,
@@ -32,7 +28,6 @@ FROM (
         CAST(p.ProductID AS VARCHAR(10)) AS product_id,
         p.ProductName AS nombre_producto,
         c.CategoryName AS categoria,
-        CAST(p.SupplierID AS VARCHAR(100)) AS proveedor_key,    
         p.QuantityPerUnit AS cantidad_por_unidad,  
         p.UnitPrice AS precio_unitario,
         p.UnitsInStock AS unidades_en_stock,
