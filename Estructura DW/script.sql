@@ -4,7 +4,7 @@ create table dim_cliente(
 	nombre_cliente nvarchar(100),
 	pais nvarchar(50),
 	ciudad nvarchar(50),
-	codigo_postal nvarchar(10),
+	codigo_postal nvarchar(25),
 	telefono nvarchar(20),
 	asesor nvarchar(80),
 	region nvarchar(100),
