@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def mssql_conndb(method=1):
-    server = os.getenv('DB_SERVER') # BD de Prueba
+    server = os.getenv('DB_SERVER') # BD de STG
     database = os.getenv('DB_DATABASE')
     username = os.getenv('DB_USERNAME')
     password = os.getenv('DB_PASSWORD')
@@ -40,6 +40,20 @@ def mssql_conndb_nort():
     database = os.getenv('DB_Nort_DATABASE')
     username = os.getenv('DB_Nort_USERNAME')
     password = os.getenv('DB_Nort_PASSWORD')
+
+    if not password:
+        raise ValueError("La variable de entorno DB_DEST_PASSWORD no está definida.")
+
+    conexion_str = f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
+    conexion = pyodbc.connect(conexion_str)
+    
+    return conexion
+
+def mssql_conndb_DW():
+    server = os.getenv('DB_DW_SERVER') #BD de DW
+    database = os.getenv('DB_DW_DATABASE')
+    username = os.getenv('DB_DW_USERNAME')
+    password = os.getenv('DB_DW_PASSWORD')
 
     if not password:
         raise ValueError("La variable de entorno DB_DEST_PASSWORD no está definida.")

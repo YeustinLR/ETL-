@@ -4,7 +4,7 @@ create table dim_cliente(
 	nombre_cliente nvarchar(100),
 	pais nvarchar(50),
 	ciudad nvarchar(50),
-	codigo_postal nvarchar(10),
+	codigo_postal nvarchar(25),
 	telefono nvarchar(20),
 	asesor nvarchar(80),
 	region nvarchar(100),
@@ -18,10 +18,8 @@ create table dim_producto(
 	product_id varchar(15),
 	nombre_producto nvarchar(100),
 	categoria varchar(30),
-	cantidad_por_unidad int,
-	precio_unitario decimal (10,2),
-	unidades_en_stock int,
-	unidades_en_orden int
+	cantidad_por_unidad nvarchar(50),
+	precio_unitario decimal (10,2)
 );
 ---------------------------------------------
 ---------------------------------------------
