@@ -19,7 +19,9 @@ create table dim_producto(
 	nombre_producto nvarchar(100),
 	categoria varchar(30),
 	cantidad_por_unidad nvarchar(50),
-	precio_unitario decimal (10,2)
+	precio_unitario decimal (10,2),
+	unidades_en_stock int,
+	unidades_en_orden int
 );
 ---------------------------------------------
 ---------------------------------------------

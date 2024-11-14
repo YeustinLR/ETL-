@@ -17,7 +17,7 @@ FROM (
 			ELSE (e.NOMBRE + ' ' + e.APELLIDO1 + ' ' + e.APELLIDO2)
 		END AS nombre_empleado,
 		e.PUESTO AS puesto,       
-		'Sin informacion' AS Fecha_Contratacion,
+		 CAST('2020-04-07' AS date ) AS fecha_contratacion,
 		CASE 
 			WHEN o.PAIS = 'EEUU' THEN 'Estados Unidos'
 			ELSE o.PAIS
@@ -53,7 +53,7 @@ FROM (
 			WHEN e.Title = 'Vice President, Sales' THEN 'Director Oficina'
 		END AS puesto,
 		CASE
-            WHEN e.HireDate IS NULL THEN 'Sin informacion'
+            WHEN e.HireDate IS NULL THEN CAST('2020-04-07' AS date )
             ELSE CONVERT(VARCHAR(10), e.HireDate, 120)  -- Convertir la fecha a VARCHAR (formato YYYY-MM-DD)
         END AS [Fecha_Contratacion],
 		CASE
@@ -72,6 +72,6 @@ FROM (
 		Employees e
 	JOIN
 		Employees em ON e.ReportsTo = em.EmployeeID
-) AS vdim_empleado
+) AS vdim_empleado;
 
 SELECT * FROM vdim_empleado order by salario
