@@ -101,7 +101,8 @@ create table fact_ventas(
 	transportista_key int,
 	cantidad int,
 	precio_unitario decimal(12,2),
-	total_venta decimal (12,2)	
+	total_venta decimal (12,2),
+	descuento decimal (12,2)
 );
 
 ALTER TABLE FACT_VENTAS ADD CONSTRAINT FK_VENTAS_CLIENTE FOREIGN KEY (cliente_key) REFERENCES dim_cliente(cliente_key);

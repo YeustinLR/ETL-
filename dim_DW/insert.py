@@ -104,8 +104,8 @@ def obtener_datos_vdim_transportista():
         # Consulta para obtener los datos de la vista
         consulta = """
         SELECT transportista_id, 
-               nombre_transportista,
-               telefono 
+            nombre_transportista,
+            telefono 
         FROM dbo.vdim_transportista
         """
         cursor_stg.execute(consulta)
@@ -119,6 +119,38 @@ def obtener_datos_vdim_transportista():
 
     except pyodbc.Error as e:
         print(f"Error al obtener los datos de vdim_transportista: {e}")
+        return []
+
+def obtener_datos_vdim_fact_ventas():
+    try:
+        # Conectar a la base de datos STG
+        conn_stg = mssql_conndb()  # Usa la función de conexión de STG
+        cursor_stg = conn_stg.cursor()
+
+        # Consulta para obtener los datos de la vista
+        consulta = """
+        SELECT fecha_key,
+            cliente_key,
+            producto_key,
+            empleado_key,
+            transportista_key,
+            cantidad,
+            precio_unitario,
+            total,
+            descuento
+        FROM dbo.vdim_fact_ventas
+        """
+        cursor_stg.execute(consulta)
+        filas = cursor_stg.fetchall()
+
+        # Cerrar la conexión a STG
+        cursor_stg.close()
+        conn_stg.close()
+
+        return filas
+
+    except pyodbc.Error as e:
+        print(f"Error al obtener los datos de vdim_fact_ventas: {e}")
         return []
 
 
@@ -230,6 +262,33 @@ def insertar_datos_dim_transportista(filas):
     except pyodbc.Error as e:
         print(f"Error al insertar los datos en dim_transportista: {e}")
 
+def insertar_datos_fact_ventas(filas):
+    try:
+        # Conectar a la base de datos DW
+        conn_dw = mssql_conndb_DW()  # Usa la función de conexión de DW
+        cursor_dw = conn_dw.cursor()
+
+        # Consulta para insertar los datos en la tabla dim_fact_ventas
+        insert_query = """
+        INSERT INTO fact_ventas (fecha_key, cliente_key, producto_key,empleado_key,transportista_key,cantidad,precio_unitario,total_venta,descuento)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+        # Insertar los datos fila por fila
+        for fila in filas:
+            cursor_dw.execute(insert_query, fila.fecha_key, fila.cliente_key, fila.producto_key, fila.empleado_key, fila.transportista_key,
+                              fila.cantidad, fila.precio_unitario,fila.total, fila.descuento)
+
+        # Hacer commit para guardar los cambios
+        conn_dw.commit()
+
+        # Cerrar la conexión a DW
+        cursor_dw.close()
+        conn_dw.close()
+
+    except pyodbc.Error as e:
+        print(f"Error al insertar los datos en dim_fac_ventas: {e}")
+
 #------------------------------GET----------------------------------|
 
 def insert_DW():
@@ -266,8 +325,19 @@ def insert_DW():
             print("Datos de transportista transferidos exitosamente de STG a DW.")
         else:
             print("No se encontraron datos en la vista vdim_transportista.")
+        
     
     except Exception as e:
-        print(f"Se produjo un error durante el proceso de transferencia: {e}")
+        print(f"Se produjo un error durante el proceso de transferencia: {e}")       
 
 
+def insert_FACT():
+    try:
+        filas_fact_ventas = obtener_datos_vdim_fact_ventas()
+        if filas_fact_ventas:
+            insertar_datos_fact_ventas(filas_fact_ventas)
+            print("Datos de fact_ventas transferidos exitosamente de STG a DW.")
+        else:
+            print("No se encontraron datos en la vista vdim_fact_ventas.")
+    except Exception as e:
+        print(f"Se produjo un error durante el proceso de transferencia de fact_ventas: {e}")

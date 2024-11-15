@@ -29,8 +29,10 @@ def main():
     # migrate_from_oracle_to_sql("PEDIDO") 
     # migrate_from_oracle_to_sql("PRODUCTO")
 
-# Llama a la funcion de insertar vistas en la tablas vdim_* de BD DW
+# Llama a la funcion de insertar vistas en la tablas vdim_* de BD DW >>>>>
     dim.insert_DW()
+# Llama a la funcion de insertar vista fact_ventas en la tabla fact_ventas en BD DW >>>>> 
+    #dim.insert_FACT()
 
 if __name__ == "__main__":
     main()
